@@ -2,10 +2,6 @@
 
 ---
 
-## Sommaire
-
----
-
 ## Aperçu
 
 * **Next.js App Router + shadcn/ui** pour l’UI.
@@ -14,7 +10,6 @@
 
   * `content/` → **vos contenus** (Markdown/JSON) **à la racine** du repo.
   * `public/admin/` → **l’interface Decap** accessible sur **`/admin`**.
-  * `public/uploads/` → **médias** téléversés via l’admin.
 
 ---
 
@@ -41,7 +36,7 @@
 │     ├─ stat-item.tsx              
 │     └─ value-item.tsx
 │
-├─ content/                          # Contenu éditorial géré par Decap (dans Git)
+├─ content/                          # Contenu géré par Decap (dans Git)
 │  ├─ pages/
 │  │  └─ home.md
 │  ├─ setting/                       
@@ -74,7 +69,7 @@
 ├─ package-lock.json
 ├─ postcss.config.mjs
 ├─ README.md
-├─ tailwind.config.ts                #
+├─ tailwind.config.ts                
 └─ tsconfig.json
 
 ```
@@ -165,7 +160,7 @@ export function StatItem({ value, title, description }: Stat) {
 * **Changer le style du titre** : modifier `text-lg font-medium` (par exemple `text-xl font-bold`).
 * **Centrage** : la classe `text-center` centre le contenu → enlever si on veut aligner à gauche.
 
-👉 Exemple : un nombre plus grand et en rouge :
+ Exemple : un nombre plus grand et en rouge :
 
 ```tsx
 <div className="text-5xl font-extrabold text-red-600">{value}</div>
