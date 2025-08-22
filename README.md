@@ -21,29 +21,62 @@
 ## Arborescence
 
 ```
-repo-root/
-├─ content/                     # <— Contenu éditorial géré par Decap (dans Git)
+
+├─ app/                              # App Router (layouts, pages)
+│  ├─ favicon.ico
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  └─ page.tsx
+│
+├─ components/                       # UI partagée
+│  ├─ layout/
+│  │  ├─ hero-section.tsx
+│  │  ├─ site-header.tsx
+│  │  ├─ stats-section.tsx
+│  │  └─ values-section.tsx
+│  └─ ui/
+│     ├─ button.tsx
+│     ├─ scrolling-banner.tsx
+│     ├─ separator.tsx
+│     ├─ stat-item.tsx              
+│     └─ value-item.tsx
+│
+├─ content/                          # Contenu éditorial géré par Decap (dans Git)
 │  ├─ pages/
-│  │  ├─ home.md
-│  │  └─ about.md
-│  │  
-│  └─ settings/
-│     └─ site.json
+│  │  └─ home.md
+│  ├─ setting/                       
+│  │  └─ site.json
+│  ├─ stats/
+│  │  └─ stats.md
+│  └─ values/
+│     └─ valuesection.md
+│
+├─ lib/                              # Accès aux contenus (fs + gray-matter)
+│  ├─ page.ts                        # getHomePage()
+│  ├─ stats.ts                       # getStats()
+│  ├─ utils.ts
+│  └─ values.ts                      # getValues()
+│
 ├─ public/
-│  ├─ admin/                    # <— SPA Decap CMS (panneau d’admin)
+│  ├─ admin/                         # SPA Decap CMS (panneau d’admin)
 │  │  ├─ index.html
 │  │  └─ config.yml
-│  └─ uploads/                  # <— Fichiers média servis publiquement
-├─ src/
-│  ├─ app/                      # Routes/layouts (App Router)
-│  ├─ component/                # UI partagée (shadcn/ui, header/footer, thème)
-│  ├─ features/                 # UI par domaine/section
-│  └─ lib/
-│     └─ content.ts             # Lecture Markdown/JSON (gray-matter + remark)
+│  ├─ impact-of-work.png             
+│  ├─ file.svg
+│  ├─ globe.svg
+│  ├─ next.svg
+│  ├─ trait.png
+│  └─ vercel.svg
+│
+├─ eslint.config.mjs
+├─ next.config.ts
 ├─ package.json
-├─ tailwind.config.ts
-├─ tsconfig.json
-└─ README.md                    # <— Ce fichier
+├─ package-lock.json
+├─ postcss.config.mjs
+├─ README.md
+├─ tailwind.config.ts                #
+└─ tsconfig.json
+
 ```
 
 ---
@@ -55,7 +88,7 @@ repo-root/
 
 * **Sous-dossiers par défaut** :
 
-  * `content/pages/` → pages statiques (`home.md`, `about.md`).
+  * `content/pages/` → pages statiques (`home.md`).
   * `content/settings/` → configuration éditoriale (`site.json` : nom, tagline, nav).
 
 ---
@@ -102,7 +135,7 @@ Vous pouvez étendre `config.yml` (ex. `projects`, `team`).
 ---
 
 
-## 📝 Exemple : modifier la section **Stats**
+## Exemple : modifier la section **Stats**
 
 La section **Stats** de ton site est composée de **deux niveaux de composants** :
 
