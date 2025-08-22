@@ -72,8 +72,8 @@ repo-root/
 ## Démarrer en local
 
 ```bash
-pnpm i          # ou npm i / yarn
-pnpm dev        # lance Next.js
+npm run dev
+npx decap-server
 # Ouvrir ensuite :
 # - Site   : http://localhost:3000/
 # - Admin  : http://localhost:3000/admin
@@ -101,10 +101,6 @@ Vous pouvez étendre `config.yml` (ex. `projects`, `team`).
 
 ---
 
-
-Parfait 🙌 je vais te rédiger une **section claire et détaillée** que tu peux mettre dans ton README, qui explique comment les composants `StatItem` et `StatsSection` fonctionnent ensemble, et comment on peut les modifier (nombre, style, disposition…).
-
----
 
 ## 📝 Exemple : modifier la section **Stats**
 
