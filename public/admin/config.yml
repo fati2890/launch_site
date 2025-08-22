@@ -1,0 +1,64 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Pour tester en local (nécessite le proxy, voir plus bas)
+local_backend: true
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  # --- Pages gérées par fichier ---
+  - label: "Pages"
+    name: "pages"
+    files:
+      - label: "Home"
+        name: "home"
+        file: "content/pages/home.md"
+        fields:
+          - { label: "Title", name: "title, widget: string" }
+          - { label: "Description", name: "description", widget: "string", required: false }
+          - { label: "Heading", name: "heading", widget: "string", required: false }
+          - { label: "Subheading", name: "subheading", widget: "string", required: false }
+          - { label: "Body", name: "body", widget: "markdown", required: false }
+
+      - label: "About"
+        name: "about"
+        file: "content/pages/about.md"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Body", name: "body", widget: "markdown", required: false }
+
+  # --- Réglages du site (JSON) ---
+  - label: "Settings"
+    name: "settings"
+    files:
+      - label: "Site Settings"
+        name: "site"
+        file: "content/setting/site.json" # <-- singulier
+        fields:
+          - { label: "Site Name", name: "name", widget: "string" }
+          - { label: "Tagline", name: "description", widget: "string", required: false }
+          - label: "Navigation"
+            name: "nav"
+            widget: "list"
+            fields:
+              - { label: "Label", name: "label", widget: "string" }
+              - { label: "URL", name: "href", widget: "string" }
+
+  # --- Sections (ex: Value Section) ---
+  - label: "Sections"
+    name: "sections"
+    files:
+      - label: "Value Section"
+        name: "value_section"
+        file: "content/values/valuesection.md"
+        fields:
+          - label: "Values"
+            name: "values"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }

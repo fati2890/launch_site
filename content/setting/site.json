@@ -1,0 +1,11 @@
+
+{
+"name": "Kieken",
+"description": "Editable settings via Decap.",
+"nav": [
+{ "label": "Home", "href": "/" },
+{ "label": "About", "href": "/about" },
+{ "label": "Blog", "href": "/blog" },
+{ "label": "Contat us", "href": "/admin" }
+]
+}
