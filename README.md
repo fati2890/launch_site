@@ -2,6 +2,10 @@
 
 ---
 
+## Sommaire
+
+---
+
 ## Aperçu
 
 * **Next.js App Router + shadcn/ui** pour l’UI.
@@ -10,6 +14,7 @@
 
   * `content/` → **vos contenus** (Markdown/JSON) **à la racine** du repo.
   * `public/admin/` → **l’interface Decap** accessible sur **`/admin`**.
+  * `public/uploads/` → **médias** téléversés via l’admin.
 
 ---
 
@@ -17,6 +22,7 @@
 
 ```
 
+repo-root/
 ├─ app/                              # App Router (layouts, pages)
 │  ├─ favicon.ico
 │  ├─ globals.css
@@ -24,7 +30,7 @@
 │  └─ page.tsx
 │
 ├─ components/                       # UI partagée
-│  ├─ layout/
+│  ├─ home/
 │  │  ├─ hero-section.tsx
 │  │  ├─ site-header.tsx
 │  │  ├─ stats-section.tsx
@@ -36,7 +42,7 @@
 │     ├─ stat-item.tsx              
 │     └─ value-item.tsx
 │
-├─ content/                          # Contenu géré par Decap (dans Git)
+├─ content/                          # Contenu  géré par Decap (dans Git)
 │  ├─ pages/
 │  │  └─ home.md
 │  ├─ setting/                       
@@ -55,8 +61,8 @@
 ├─ public/
 │  ├─ admin/                         # SPA Decap CMS (panneau d’admin)
 │  │  ├─ index.html
-│  │  └─ config.yml
-│  ├─ impact-of-work.png             
+│  │  └─ config.yml                      
+│  ├─ impact-of-work.png            
 │  ├─ file.svg
 │  ├─ globe.svg
 │  ├─ next.svg
@@ -69,10 +75,9 @@
 ├─ package-lock.json
 ├─ postcss.config.mjs
 ├─ README.md
-├─ tailwind.config.ts                
+├─ tailwind.config.ts               
 └─ tsconfig.json
 
-```
 
 ---
 
@@ -122,15 +127,14 @@ Vous pouvez étendre `config.yml` (ex. `projects`, `team`).
 
 ## Composants & organisation
 
-* **Global partagé** → `src/component/` : primitives shadcn/ui (`Button`, `Input`), layout (`site-header`, `site-footer`), thème.
-* **Par domaine** → `src/features/<feature>/components/` : UI liée à un contexte précis (`settings-nav`, `sign-in-form`).
-* **Global navbar** : `src/component/layout/site-header.tsx`.
-  **Sous-nav de section** (ex. dashboard/settings) : `src/features/<feature>/components/`.
+* **Composant réutilisable** → `src/component/ui` : primitives shadcn/ui (`Button`, `Input`), .
+
+* **Composant final** : `src/component/home/site-header.tsx`.
 
 ---
 
 
-## Exemple : modifier la section **Stats**
+##  Exemple : modifier la section **Stats**
 
 La section **Stats** de ton site est composée de **deux niveaux de composants** :
 
@@ -160,7 +164,7 @@ export function StatItem({ value, title, description }: Stat) {
 * **Changer le style du titre** : modifier `text-lg font-medium` (par exemple `text-xl font-bold`).
 * **Centrage** : la classe `text-center` centre le contenu → enlever si on veut aligner à gauche.
 
- Exemple : un nombre plus grand et en rouge :
+👉 Exemple : un nombre plus grand et en rouge :
 
 ```tsx
 <div className="text-5xl font-extrabold text-red-600">{value}</div>
