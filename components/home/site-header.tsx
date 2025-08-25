@@ -11,7 +11,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
       <div className="container flex h-14 items-center justify-between">
-        <Link href="/" className="font-semibold">
+        <Link href="/" className=" text-2xl font-semibold text-sky-800">
           {(site as any).name ?? "Site"}
         </Link>
         <nav className="flex items-center gap-2">
