@@ -10,7 +10,7 @@
 
   * `content/` → **vos contenus** (Markdown/JSON) **à la racine** du repo.
   * `public/admin/` → **l’interface Decap** accessible sur **`/admin`**.
-  * `public/uploads/` → **médias** téléversés via l’admin.
+
 
 ---
 
