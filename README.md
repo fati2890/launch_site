@@ -2,10 +2,6 @@
 
 ---
 
-## Sommaire
-
----
-
 ## Aperçu
 
 * **Next.js App Router + shadcn/ui** pour l’UI.
