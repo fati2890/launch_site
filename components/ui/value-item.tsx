@@ -24,9 +24,8 @@ export function ValueItem({ index, title, description, className }: ValueItemPro
         <h3 className="relative inline-block leading-none font-light text-sky-500 text-[clamp(2.25rem,6vw,4.25rem)]">
           {title}
 
-          {/* ton trait exporté en image */}
           <Image
-            src="/trait.png"   // ou /trait.svg si tu l’as exporté en SVG
+            src="/trait.png"   
             alt=""
             width={200}
             height={10}
