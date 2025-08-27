@@ -10,21 +10,6 @@ Architecture “headless” : **le style vit dans les composants**, **le contenu
 
 ---
 
-## Sommaire
-
-* [Stack & scripts](#stack--scripts)
-* [Arborescence](#arborescence)
-* [Flux de données](#flux-de-données)
-* [Dossiers & fichiers clés](#dossiers--fichiers-clés)
-* [Composants UI](#composants-ui)
-* [Lib (fonctions de lecture)](#lib-fonctions-de-lecture)
-* [Blocs (`home.md` → rendu dynamique)](#blocs-homemd--rendu-dynamique)
-* [Decap CMS (admin)](#decap-cms-admin)
-* [Personnaliser / Étendre](#personnaliser--étendre)
-* [Dépannage rapide](#dépannage-rapide)
-
----
-
 ## Stack & scripts
 
 * **Next.js (App Router)**, **TypeScript**
@@ -44,16 +29,17 @@ npx decap-server    # (en local) proxy Decap si local_backend: true
 ## Arborescence
 
 ```
-repo-root/
+r
 ├─ app/                          # App Router (layouts, pages)
 │  ├─ globals.css
 │  ├─ layout.tsx
 │  └─ page.tsx
 │
 ├─ components/                   # UI & sections (style)
-│  ├─ layout/
+│  ├─ home /
 │  │  ├─ home-blocks.tsx         # rend la page à partir des "blocks"
-│  │  └─ site-header.tsx         # header (reçoit site via props)
+│  │  └─ site-header.tsx  
+       # header 
 │  └─ ui/
 │     ├─ scrolling-banner.tsx    # bandeau défilant (style seulement)
 │     ├─ stat-item.tsx           # carte de stat (style)
@@ -61,13 +47,7 @@ repo-root/
 │
 ├─ content/                      # Contenu éditorial (source de vérité)
 │  ├─ pages/
-│  │  └─ home.md                 # orchestre les blocs de la page d’accueil
-│  ├─ stats/
-│  │  └─ stats.md                # source optionnelle de stats (items)
-│  ├─ values/
-│  │  └─ valuesection.md         # source optionnelle de values
-│  └─ setting/
-│     └─ site.json               # (optionnel) métadonnées du site si non dans home.md
+│  │  └─ home.md                 # orchestre les blocs de la page        
 │
 ├─ lib/                          # Lecture des contenus
 │  ├─ page.ts                    # getHomePage(): lit home.md & parse les blocs
@@ -87,16 +67,6 @@ repo-root/
 
 ---
 
-## Flux de données
-
-1. **Éditeur** modifie `content/pages/home.md` (ou via `/admin`).
-2. `lib/page.ts` lit `home.md` (front-matter YAML) → **normalise les blocs**.
-3. `components/layout/home-blocks.tsx` **mappe les blocs** → **composants stylés** (`SiteHeader`, `HeadingView`, `StatsView`, `ValuesView`, `ScrollingBanner`…).
-4. `app/page.tsx` rend simplement `<HomeBlocks />`.
-
-> Résultat : on change l’ordre/les sections **sans toucher au code**, juste en éditant `home.md`.
-
----
 
 ## Dossiers & fichiers clés
 
@@ -268,43 +238,181 @@ Rendu assuré par `components/layout/home-blocks.tsx`.
 
 ---
 
-## Personnaliser / Étendre
 
-* **Ajouter une section “Clients Grid”** :
 
-  * créer `clients-grid.tsx` (style),
-  * ajouter un type de bloc `clients` (`asClients` dans `lib/page.ts`),
-  * rendre `case "clients"` dans `home-blocks.tsx`,
-  * ajouter le schéma dans `config.yml` (list d’items avec logo, nom, lien),
-  * remplir `blocks:` dans `home.md`.
 
-* **Déplacer le header globalement** :
 
-  * soit `- type: "header"` dans `blocks`,
-  * soit `<SiteHeader site={page.site} />` dans `app/layout.tsx` (et on retire le bloc pour éviter les doublons).
+## Ajouter un nouveau composant (nouveau “block”)
 
----
 
-## Dépannage rapide
 
-* **Le header affiche “Site”** → `SiteHeader` n’a pas reçu `site` en props
-  (passer `page.site` dans `home-blocks.tsx` ou le rendre depuis `layout.tsx`).
+### 0) Choisir un nom et les champs
 
-* **/admin → 404** → vérifier `public/admin/index.html` et `public/admin/config.yml`.
-  Tester directement `http://localhost:3000/admin/index.html` et `.../config.yml`.
+Exemple : un block **CTA** (call-to-action) avec :
 
-* **Décap ne sauvegarde pas en local** → lancer `npx decap-server` (si `local_backend: true`).
-
-* **La bannière défile avec un “saut”** → fournir `itemWidth` exact (px) à `ScrollingBanner` si `src` est une string.
-
-* **Imports qui cassent sur Linux/CI** → respecter la **casse** (ex: `stat-item.tsx`, pas `Stat-item.tsx`).
+* `title` (string), `text` (string),
+* `buttonLabel` (string), `buttonHref` (string),
+* `align` optionnel (`left | center | right`).
 
 ---
 
-## Licence
+### 1) Créer le composant UI (style uniquement)
 
-Libre à toi d’ajouter la licence de ton choix (MIT, etc.).
+`components/ui/cta.tsx` :
+
+```tsx
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+export type CtaProps = {
+  title: string;
+  text?: string;
+  buttonLabel?: string;
+  buttonHref?: string;
+  align?: "left" | "center" | "right";
+  className?: string;
+};
+
+export default function Cta({
+  title,
+  text,
+  buttonLabel,
+  buttonHref = "#",
+  align = "left",
+  className,
+}: CtaProps) {
+  const alignClass =
+    align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left";
+
+  return (
+    <section className={cn("py-12", alignClass, className)}>
+      <div className="max-w-3xl mx-auto px-4">
+        <h3 className="text-3xl md:text-4xl font-semibold text-sky-700">{title}</h3>
+        {text ? <p className="mt-3 text-muted-foreground">{text}</p> : null}
+        {buttonLabel ? (
+          <div className="mt-6">
+            <Button asChild>
+              <Link href={buttonHref}>{buttonLabel}</Link>
+            </Button>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+```
 
 ---
 
-Besoin d’un exemple **`config.yml`** prêt pour éditer `site`, `blocks`, `items`, `values` depuis Decap ? Dis-le et je te le fournis adapté à ton repo.
+### 2) Déclarer le type + le parser dans `lib/page.ts`
+
+* **a.** Ajouter le **type** au dessus :
+
+```ts
+export type CtaBlock = {
+  type: "cta";
+  title: string;
+  text?: string;
+  buttonLabel?: string;
+  buttonHref?: string;
+  align?: "left" | "center" | "right";
+};
+```
+
+* **b.** L’ajouter à l’union `PageBlock` :
+
+```ts
+export type PageBlock =
+  | HeadingBlock
+  | StatsBlock
+  | ValuesBlock
+  | BannerBlock
+  | HeaderBlock
+  | CtaBlock;          //...
+```
+
+* **c.** Écrire le **narrower** (helper) :
+
+```ts
+const asCta = (b: any): CtaBlock | null =>
+  b?.type === "cta"
+    ? {
+        type: "cta",
+        title: String(b.title ?? ""),
+        text: b?.text ? String(b.text) : undefined,
+        buttonLabel: b?.buttonLabel ? String(b.buttonLabel) : undefined,
+        buttonHref: b?.buttonHref ? String(b.buttonHref) : undefined,
+        align: (["left", "center", "right"] as const).includes(b?.align) ? b.align : "left",
+      }
+    : null;
+```
+
+* **d.** Brancher le helper dans `getHomePage()` :
+
+```ts
+const blocks = blocksRaw
+  .map(
+    (b: unknown) =>
+      asHeader(b as any) ||
+      asHeading(b as any) ||
+      asStats(b as any) ||
+      asValues(b as any) ||
+      asBanner(b as any) ||
+      asCta(b as any)        // 👈 ajouté
+  )
+  .filter(Boolean) as PageBlock[];
+```
+
+---
+
+### 3) Rendre le nouveau block dans `home-blocks.tsx`
+
+* **a.** Importer le composant :
+
+```tsx
+import Cta from "@/components/ui/cta";
+```
+
+* **b.** Ajouter un `case` dans le **renderer** :
+
+```tsx
+function renderBlock(block: PageBlock, index: number, site?: any) {
+  switch (block.type) {
+    // ... autres cases
+    case "cta":
+      return (
+        <Cta
+          key={`cta-${index}`}
+          title={block.title}
+          text={block.text}
+          buttonLabel={block.buttonLabel}
+          buttonHref={block.buttonHref}
+          align={block.align}
+        />
+      );
+  }
+}
+```
+
+> Le renderer **mappe** `type` → composant UI, en passant les props.
+
+---
+
+### 4) Déclarer le block dans `home.md`
+
+Dans `content/pages/home.md`, ajoute dans `blocks:` :
+
+```yaml
+blocks:
+ 
+  - type: "cta"
+    title: "Ready to start?"
+    text: "Let’s talk about your project and build something great."
+    buttonLabel: "Contact us"
+    buttonHref: "/contact"
+    align: "center"
+```
+
+
+
