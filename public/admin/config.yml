@@ -1,15 +1,4 @@
-backend:
-  name: git-gateway
-  branch: main
-
-# Pour tester en local (nécessite le proxy, voir plus bas)
-local_backend: true
-
-media_folder: "public/uploads"
-public_folder: "/uploads"
-
 collections:
-  # --- Pages gérées par fichier ---
   - label: "Pages"
     name: "pages"
     files:
@@ -17,48 +6,42 @@ collections:
         name: "home"
         file: "content/pages/home.md"
         fields:
-          - { label: "Title", name: "title, widget: string" }
-          - { label: "Description", name: "description", widget: "string", required: false }
-          - { label: "Heading", name: "heading", widget: "string", required: false }
-          - { label: "Subheading", name: "subheading", widget: "string", required: false }
-          - { label: "Body", name: "body", widget: "markdown", required: false }
-
-      - label: "About"
-        name: "about"
-        file: "content/pages/about.md"
-        fields:
           - { label: "Title", name: "title", widget: "string" }
-          - { label: "Body", name: "body", widget: "markdown", required: false }
 
-  # --- Réglages du site (JSON) ---
-  - label: "Settings"
-    name: "settings"
-    files:
-      - label: "Site Settings"
-        name: "site"
-        file: "content/setting/site.json" # <-- singulier
-        fields:
-          - { label: "Site Name", name: "name", widget: "string" }
-          - { label: "Tagline", name: "description", widget: "string", required: false }
-          - label: "Navigation"
-            name: "nav"
+          - label: "Blocks"
+            name: "blocks"
             widget: "list"
-            fields:
-              - { label: "Label", name: "label", widget: "string" }
-              - { label: "URL", name: "href", widget: "string" }
+            types:
+              - label: "Heading"
+                name: "heading"
+                widget: "object"
+                fields:
+                  - { label: "Type", name: "type", widget: "hidden", default: "heading" }
+                  - { label: "Heading", name: "heading", widget: "string" }
+                  - { label: "Subheading", name: "subheading", widget: "string", required: false }
+                  - { label: "Align", name: "align", widget: "select", options: ["left", "center", "right"], required: false }
 
-  # --- Sections (ex: Value Section) ---
-  - label: "Sections"
-    name: "sections"
-    files:
-      - label: "Value Section"
-        name: "value_section"
-        file: "content/values/valuesection.md"
-        fields:
-          - label: "Values"
-            name: "values"
-            widget: "list"
-            summary: "{{fields.title}}"
-            fields:
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Description", name: "description", widget: "text" }
+              - label: "Stats"
+                name: "stats"
+                widget: "object"
+                fields:
+                  - { label: "Type", name: "type", widget: "hidden", default: "stats" }
+                  - label: "Items"
+                    name: "items"
+                    widget: "list"
+                    fields:
+                      - { label: "Value", name: "value", widget: "string" }
+                      - { label: "Title", name: "title", widget: "string" }
+                      - { label: "Description", name: "description", widget: "text", required: false }
+
+              - label: "Banner"
+                name: "banner"
+                widget: "object"
+                fields:
+                  - { label: "Type", name: "type", widget: "hidden", default: "banner" }
+                  - { label: "Image", name: "src", widget: "image" }
+                  - { label: "Item Width (px)", name: "itemWidth", widget: "number", value_type: "int" }
+                  - { label: "Height (px)", name: "height", widget: "number", value_type: "int", required: false }
+                  - { label: "Speed (s)", name: "speedSeconds", widget: "number", value_type: "int", required: false }
+                  - { label: "Gap (px)", name: "gapPx", widget: "number", value_type: "int", required: false }
+                  - { label: "Count", name: "count", widget: "number", value_type: "int", required: false }

@@ -1,209 +1,310 @@
-# README.md — Next.js (App Router) + shadcn/ui + Decap CMS
+Voici un **README** clair et complet que tu peux coller dans ton projet.
+Il décrit l’arborescence, chaque fichier important, et les fonctions clés (avec leur rôle et leurs entrées/sorties).
 
 ---
 
-## Aperçu
+# Keiken – Next.js + shadcn/ui + Decap (Headless CMS)
 
-* **Next.js App Router + shadcn/ui** pour l’UI.
-* **Decap CMS** (ex Netlify CMS) pour éditer le contenu **stocké dans Git**.
-* **Trois emplacements clés** :
+Site Next.js piloté par du **contenu Markdown/JSON** via **Decap CMS** (Netlify/Decap).
+Architecture “headless” : **le style vit dans les composants**, **le contenu vit dans `content/`**, et la page d’accueil est **orchestrée par des blocs** déclarés dans `content/pages/home.md`.
 
-  * `content/` → **vos contenus** (Markdown/JSON) **à la racine** du repo.
-  * `public/admin/` → **l’interface Decap** accessible sur **`/admin`**.
+---
 
+## Sommaire
+
+* [Stack & scripts](#stack--scripts)
+* [Arborescence](#arborescence)
+* [Flux de données](#flux-de-données)
+* [Dossiers & fichiers clés](#dossiers--fichiers-clés)
+* [Composants UI](#composants-ui)
+* [Lib (fonctions de lecture)](#lib-fonctions-de-lecture)
+* [Blocs (`home.md` → rendu dynamique)](#blocs-homemd--rendu-dynamique)
+* [Decap CMS (admin)](#decap-cms-admin)
+* [Personnaliser / Étendre](#personnaliser--étendre)
+* [Dépannage rapide](#dépannage-rapide)
+
+---
+
+## Stack & scripts
+
+* **Next.js (App Router)**, **TypeScript**
+* **Tailwind** + **shadcn/ui**
+* **Decap CMS** (UI d’admin sur `/admin`)
+* **gray-matter** (lecture du front-matter YAML dans les `.md`)
+
+Scripts utiles :
+
+```bash
+npm run dev         # démarre le site
+npx decap-server    # (en local) proxy Decap si local_backend: true
+```
 
 ---
 
 ## Arborescence
 
 ```
-
 repo-root/
-├─ app/                              # App Router (layouts, pages)
-│  ├─ favicon.ico
+├─ app/                          # App Router (layouts, pages)
 │  ├─ globals.css
 │  ├─ layout.tsx
 │  └─ page.tsx
 │
-├─ components/                       # UI partagée
-│  ├─ home/
-│  │  ├─ hero-section.tsx
-│  │  ├─ site-header.tsx
-│  │  ├─ stats-section.tsx
-│  │  └─ values-section.tsx
+├─ components/                   # UI & sections (style)
+│  ├─ layout/
+│  │  ├─ home-blocks.tsx         # rend la page à partir des "blocks"
+│  │  └─ site-header.tsx         # header (reçoit site via props)
 │  └─ ui/
-│     ├─ button.tsx
-│     ├─ scrolling-banner.tsx
-│     ├─ separator.tsx
-│     ├─ stat-item.tsx              
-│     └─ value-item.tsx
+│     ├─ scrolling-banner.tsx    # bandeau défilant (style seulement)
+│     ├─ stat-item.tsx           # carte de stat (style)
+│     └─ value-item.tsx          # item de “values” (style)
 │
-├─ content/                          # Contenu  géré par Decap (dans Git)
+├─ content/                      # Contenu éditorial (source de vérité)
 │  ├─ pages/
-│  │  └─ home.md
-│  ├─ setting/                       
-│  │  └─ site.json
+│  │  └─ home.md                 # orchestre les blocs de la page d’accueil
 │  ├─ stats/
-│  │  └─ stats.md
-│  └─ values/
-│     └─ valuesection.md
+│  │  └─ stats.md                # source optionnelle de stats (items)
+│  ├─ values/
+│  │  └─ valuesection.md         # source optionnelle de values
+│  └─ setting/
+│     └─ site.json               # (optionnel) métadonnées du site si non dans home.md
 │
-├─ lib/                              # Accès aux contenus (fs + gray-matter)
-│  ├─ page.ts                        # getHomePage()
-│  ├─ stats.ts                       # getStats()
-│  ├─ utils.ts
-│  └─ values.ts                      # getValues()
+├─ lib/                          # Lecture des contenus
+│  ├─ page.ts                    # getHomePage(): lit home.md & parse les blocs
+│  ├─ stats.ts                   # getStats(): lit stats.md
+│  └─ values.ts                  # getValues(): lit valuesection.md
 │
 ├─ public/
-│  ├─ admin/                         # SPA Decap CMS (panneau d’admin)
-│  │  ├─ index.html
-│  │  └─ config.yml                      
-│  ├─ impact-of-work.png            
-│  ├─ file.svg
-│  ├─ globe.svg
-│  ├─ next.svg
-│  ├─ trait.png
-│  └─ vercel.svg
+│  ├─ admin/
+│  │  ├─ index.html              # SPA de Decap CMS
+│  │  └─ config.yml              # config Decap
+│  └─ uploads/                   # assets/upload CMS (optionnel)
 │
-├─ eslint.config.mjs
-├─ next.config.ts
-├─ package.json
-├─ package-lock.json
-├─ postcss.config.mjs
-├─ README.md
-├─ tailwind.config.ts               
-└─ tsconfig.json
-
-
----
-
-## `content/` — où et pourquoi
-
-* **Emplacement** : **racine du repo** (obligatoire pour la config incluse).
- 
-
-* **Sous-dossiers par défaut** :
-
-  * `content/pages/` → pages statiques (`home.md`).
-  * `content/settings/` → configuration éditoriale (`site.json` : nom, tagline, nav).
-
----
-
-## `public/admin/` — rôle de l’admin Decap
-
-* **`public/admin/index.html`** : charge l’app **Decap CMS** depuis un CDN → **`/admin`**.
-* **`public/admin/config.yml`** : configuration du backend Git, des **collections** et **champs**, des **dossiers de médias**.
-* **Pourquo i `public/` ?** Tout ce qui est dans `public/` est servi tel quel par Next ; on obtient une **admin statique** sans code serveur.
-
----
-
-
-## Démarrer en local
-
-```bash
-npm run dev
-npx decap-server
-# Ouvrir ensuite :
-# - Site   : http://localhost:3000/
-# - Admin  : http://localhost:3000/admin
-```
-
-
----
-
-## Collections par défaut
-
-* **Pages** (`content/pages/*.md`) : `home.md`, `about.md`.
-* **Posts** (`content/posts/*.md`) : `title`, `date`, `description?`, `draft`, `body`.
-* **Settings** (`content/settings/site.json`) : `name`, `description?`, `nav[]`.
-
-Vous pouvez étendre `config.yml` (ex. `projects`, `team`).
-
----
-
-## Composants & organisation
-
-* **Composant réutilisable** → `src/component/ui` : primitives shadcn/ui (`Button`, `Input`), .
-
-* **Composant final** : `src/component/home/site-header.tsx`.
-
----
-
-
-##  Exemple : modifier la section **Stats**
-
-La section **Stats** de ton site est composée de **deux niveaux de composants** :
-
-1. **`StatItem.tsx`** : représente une seule “case” de statistique (valeur + titre + description).
-2. **`StatsSection.tsx`** : lit les données depuis le fichier Markdown (`content/stats/stats.md`) et affiche plusieurs `StatItem` dans une grille.
-
----
-
-### 1. Modifier un **StatItem** (style d’une case)
-
-Le composant `StatItem` ressemble à ceci (simplifié) :
-
-```tsx
-export function StatItem({ value, title, description }: Stat) {
-  return (
-    <div className="text-center">
-      <div className="text-4xl font-bold text-sky-500">{value}</div>
-      <h4 className="mt-2 text-lg font-medium">{title}</h4>
-      {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
-    </div>
-  );
-}
-```
-
-* **Changer la couleur du nombre** : remplacer `text-sky-500` par une autre couleur Tailwind (`text-red-600`, `text-emerald-500`, etc.).
-* **Changer la taille du nombre** : modifier `text-4xl` (`text-2xl`, `text-5xl`, …).
-* **Changer le style du titre** : modifier `text-lg font-medium` (par exemple `text-xl font-bold`).
-* **Centrage** : la classe `text-center` centre le contenu → enlever si on veut aligner à gauche.
-
-👉 Exemple : un nombre plus grand et en rouge :
-
-```tsx
-<div className="text-5xl font-extrabold text-red-600">{value}</div>
+├─ tailwind.config.ts (si présent)
+├─ tsconfig.json
+└─ package.json
 ```
 
 ---
 
-### 2. Modifier la **StatsSection** (organisation des cases)
+## Flux de données
 
-Le composant `StatsSection` lit les données et affiche plusieurs `StatItem` :
+1. **Éditeur** modifie `content/pages/home.md` (ou via `/admin`).
+2. `lib/page.ts` lit `home.md` (front-matter YAML) → **normalise les blocs**.
+3. `components/layout/home-blocks.tsx` **mappe les blocs** → **composants stylés** (`SiteHeader`, `HeadingView`, `StatsView`, `ValuesView`, `ScrollingBanner`…).
+4. `app/page.tsx` rend simplement `<HomeBlocks />`.
 
-```tsx
-export default async function StatsSection() {
-  const items = await getStats();
+> Résultat : on change l’ordre/les sections **sans toucher au code**, juste en éditant `home.md`.
 
-  return (
-    <section className="py-12 max-w-3xl mx-auto">
-      <div className="grid gap-8 sm:grid-cols-2">
-        {items.slice(0, 4).map((s, i) => (
-          <StatItem
-            key={i}
-            value={s.value}
-            title={s.title}
-            description={s.description}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
+---
+
+## Dossiers & fichiers clés
+
+### `content/pages/home.md`
+
+Fichier **maître**. Contient :
+
+* métadonnées optionnelles (`site: { name, nav… }` si tu veux que le header soit piloté ici),
+* données brutes (`items` pour les stats, `values` pour les valeurs),
+* surtout **`blocks:`** (liste ordonnée de sections à rendre).
+
+Exemple :
+
+```yaml
+site:
+  name: "Keiken"
+  nav:
+    - { label: "Home", href: "/" }
+    - { label: "About", href: "/about" }
+
+blocks:
+  - type: "header"
+  - type: "heading"
+    heading: "Keiken Digital Solutions"
+    subheading: "Building Trust"
+    align: "center"
+  - type: "stats"
+    items:
+      - { value: 25, title: "Customer challenges solved", description: "…" }
+      - { value: 50, title: "Contributors", description: "…" }
+  - type: "banner"
+    src: "/uploads/impact.png"
+    itemWidth: 420
+    height: 92
+    gapPx: 80
+    speedSeconds: 24
+  - type: "values"
+    values:
+      - { title: "Build", description: "…" }
+      - { title: "Collaborate", description: "…" }
 ```
 
-* **Nombre de cases affichées** :
+### `public/admin/config.yml`
 
-  * `.slice(0, 4)` → prend les 4 premiers items du fichier Markdown.
-  * Supprimer `slice` → afficher toutes les stats.
-  * Modifier en `.slice(0, 6)` → afficher 6 items.
+Configuration de **Decap CMS** : backend Git, dossiers média, et **collections** (quels fichiers/ champs sont éditables dans l’UI).
 
-* **Largeur du container** :
+---
 
-  * `max-w-3xl` → limite la largeur à 768px.
+## Composants UI
 
+> Ces composants **ne contiennent pas de contenu**, seulement **style + props**.
 
+* `components/layout/site-header.tsx`
+  Header sticky avec blur. **Reçoit** `site?: { name?: string; nav?: {label, href}[] }`.
+  Affiche le **dernier item** de nav sous forme de bouton ghost.
 
+* `components/ui/stat-item.tsx`
+  Affiche une **stat** : `value`, `title`, `description`.
 
+* `components/ui/value-item.tsx`
+  Affiche une **valeur** (titre + description) avec un index “01., 02., …” et un trait décoratif (image `trait.png` si utilisé).
 
+* `components/ui/scrolling-banner.tsx`
+  Bandeau défilant **infini et fluide**. Props :
+
+  * `src` (string ou StaticImageData),
+  * `itemWidth` (**obligatoire** si `src` est une string),
+  * `height`, `count`, `gapPx`, `speedSeconds`.
+    Le calcul de la piste est fait en px pour éviter les “sauts”.
+
+---
+
+## Lib (fonctions de lecture)
+
+Toutes les fonctions lisent le disque via `fs/promises` + `gray-matter` (parse du front-matter).
+
+### `lib/page.ts`
+
+* **Types exposés** :
+
+  * `PageBlock` (union de blocs `header`, `heading`, `stats`, `values`, `banner`)
+  * `SiteMeta` (`name`, `description`, `nav`)
+  * `PageData` (`title`, `blocks`, `site?`)
+
+* **Fonctions de narrowing** :
+  `asHeader`, `asHeading`, `asStats`, `asValues`, `asBanner`
+  → sécurisent & normalisent chaque bloc lu depuis YAML.
+
+* **`getHomePage(): Promise<PageData>`**
+
+  * **Entrée** : aucune (lit `content/pages/home.md`)
+  * **Sortie** :
+
+    ```ts
+    {
+      title: string;
+      blocks: PageBlock[]; // ordre = celui de home.md
+      site?: { name?: string; description?: string; nav?: { label; href }[] };
+    }
+    ```
+  * **Rôle** :
+
+    1. lire `home.md`,
+    2. convertir `blocks` bruts en objets typés,
+    3. exposer `site` si présent (pour le header piloté par CMS).
+
+### `lib/stats.ts`
+
+* **Types** :
+  `type Stat = { value: string | number; title: string; description?: string }`
+* **`getStats(): Promise<Stat[]>`**
+
+  * Lit `content/stats/stats.md` et renvoie la liste `items` (ou `[]` si absent).
+  * Utilisé si tu veux faire des **sections Stats basées sur un fichier dédié**.
+
+### `lib/values.ts`
+
+* **Types** :
+  `type Value = { title: string; description: string }`
+* **`getValues(): Promise<Value[]>`**
+
+  * Lit `content/values/valuesection.md` et renvoie la liste `values`.
+
+> Remarque : dans l’architecture “blocks”, tu peux **soit** déclarer `items`/`values` **inline** dans `home.md`, **soit** garder `getStats()` / `getValues()` si tu préfères une source séparée. Les deux approches coexistent.
+
+---
+
+## Blocs (`home.md` → rendu dynamique)
+
+Rendu assuré par `components/layout/home-blocks.tsx`.
+
+* **Header**
+  `{ type: "header" }`
+  → rend `<SiteHeader site={page.site} />`
+
+* **Heading**
+  `{ type: "heading", heading, subheading?, align? }`
+  → rend un grand titre (centré, droit, gauche)
+
+* **Stats**
+  `{ type: "stats", items?: [...], source?: "lib" }`
+  → *items inline* ou récupération via `getStats()` (si `source: "lib"` et que tu ajoutes la logique correspondante)
+
+* **Values**
+  `{ type: "values", values?: [...], source?: "lib" }`
+  → *values inline* ou récupération via `getValues()`
+
+* **Banner**
+  `{ type: "banner", src, itemWidth, height?, gapPx?, speedSeconds?, count? }`
+  → rend `ScrollingBanner` (défilement fluide)
+
+> **Ajouter un nouveau type de bloc** =
+>
+> 1. ajouter un `asMonBloc` dans `lib/page.ts`,
+> 2. une `case "monBloc"` dans `home-blocks.tsx`,
+> 3. (optionnel) champs dans `public/admin/config.yml` si on veut éditer depuis Decap.
+
+---
+
+## Decap CMS (admin)
+
+* **UI** : `public/admin/index.html` (charge `decap-cms`)
+* **Config** : `public/admin/config.yml`
+
+  * définit le backend Git (`git-gateway` ou `test-repo` en local),
+  * `media_folder`/`public_folder`,
+  * `collections` (expose `content/pages/home.md`, `content/stats/stats.md`, etc.)
+* **Local** : si `local_backend: true` → lancer `npx decap-server`
+
+---
+
+## Personnaliser / Étendre
+
+* **Ajouter une section “Clients Grid”** :
+
+  * créer `clients-grid.tsx` (style),
+  * ajouter un type de bloc `clients` (`asClients` dans `lib/page.ts`),
+  * rendre `case "clients"` dans `home-blocks.tsx`,
+  * ajouter le schéma dans `config.yml` (list d’items avec logo, nom, lien),
+  * remplir `blocks:` dans `home.md`.
+
+* **Déplacer le header globalement** :
+
+  * soit `- type: "header"` dans `blocks`,
+  * soit `<SiteHeader site={page.site} />` dans `app/layout.tsx` (et on retire le bloc pour éviter les doublons).
+
+---
+
+## Dépannage rapide
+
+* **Le header affiche “Site”** → `SiteHeader` n’a pas reçu `site` en props
+  (passer `page.site` dans `home-blocks.tsx` ou le rendre depuis `layout.tsx`).
+
+* **/admin → 404** → vérifier `public/admin/index.html` et `public/admin/config.yml`.
+  Tester directement `http://localhost:3000/admin/index.html` et `.../config.yml`.
+
+* **Décap ne sauvegarde pas en local** → lancer `npx decap-server` (si `local_backend: true`).
+
+* **La bannière défile avec un “saut”** → fournir `itemWidth` exact (px) à `ScrollingBanner` si `src` est une string.
+
+* **Imports qui cassent sur Linux/CI** → respecter la **casse** (ex: `stat-item.tsx`, pas `Stat-item.tsx`).
+
+---
+
+## Licence
+
+Libre à toi d’ajouter la licence de ton choix (MIT, etc.).
+
+---
+
+Besoin d’un exemple **`config.yml`** prêt pour éditer `site`, `blocks`, `items`, `values` depuis Decap ? Dis-le et je te le fournis adapté à ton repo.
