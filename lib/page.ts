@@ -1,62 +1,21 @@
+// src/lib/page.ts
 import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
-
 import { unstable_noStore as noStore } from "next/cache";
 
-/** ---------- TYPES : SITE META (header) ---------- */
-export type SiteNav = { label: string; href: string };
-export type SiteMeta = { name?: string; description?: string; nav?: SiteNav[] };
+import type {
+  PageBlock,
+  PageData,
+  SiteMeta,
+  HeadingBlock,
+  StatsBlock,
+  ValuesBlock,
+  BannerBlock,
+  HeaderBlock,
+} from "./page-types";
 
-/** ---------- TYPES : BLOCKS ---------- */
-export type HeadingBlock = {
-  type: "heading";
-  heading: string;
-  subheading?: string;
-  align?: "left" | "center" | "right";
-};
-
-export type StatItemData = { value: string | number; title: string; description?: string };
-export type StatsBlock = {
-  type: "stats";
-  source?: "lib";           // si "lib": on appelle getStats() côté renderer
-  items?: StatItemData[];   // sinon: items inline
-};
-
-export type ValueItemData = { title: string; description: string };
-export type ValuesBlock = {
-  type: "values";
-  source?: "lib";           // si "lib": on appelle getValues() côté renderer
-  values?: ValueItemData[]; // sinon: values inline
-};
-
-export type BannerBlock = {
-  type: "banner";
-  src: string;
-  itemWidth: number;
-  height?: number;
-  speedSeconds?: number;
-  gapPx?: number;
-  count?: number;
-};
-
-export type HeaderBlock = { type: "header" }; // SiteHeader
-
-export type PageBlock =
-  | HeadingBlock
-  | StatsBlock
-  | ValuesBlock
-  | BannerBlock
-  | HeaderBlock;
-
-/** ---------- TYPE : PAGE DATA ---------- */
-export type PageData = {
-  title: string;
-  blocks: PageBlock[];
-  site?: SiteMeta;          // <- ajouté : meta du header depuis home.md
-};
-
-/** ---------- HELPERS DE NARROWING ---------- */
+/** ---------- HELPERS DE NARROWING (parse securisé des blocks) ---------- */
 const asHeading = (b: any): HeadingBlock | null =>
   b?.type === "heading"
     ? {
@@ -113,10 +72,10 @@ const asBanner = (b: any): BannerBlock | null =>
 const asHeader = (b: any): HeaderBlock | null =>
   b?.type === "header" ? { type: "header" } : null;
 
-/** ---------- LECTURE HOME.MD ---------- */
-export async function getHomePage(): Promise<PageData> {
-    noStore(); // pas de cache pour la lecture de home.md
-  const file = path.join(process.cwd(), "content", "pages", "home.md");
+/** ---------- LECTURE D’UNE PAGE GENERIQUE ---------- */
+export async function getPage(slug: string): Promise<PageData> {
+  noStore(); // pas de cache (utile en dev/preview)
+  const file = path.join(process.cwd(), "content", "pages", `${slug}.md`);
   const raw = await fs.readFile(file, "utf8");
   const { data } = matter(raw);
 
@@ -136,7 +95,7 @@ export async function getHomePage(): Promise<PageData> {
     )
     .filter(Boolean) as PageBlock[];
 
-  // site meta (optionnelle) depuis home.md -> site: { name, description, nav[] }
+  // site meta (optionnelle) -> site: { name, description, nav[] }
   const site: SiteMeta = {
     name: (data as any)?.site?.name ?? undefined,
     description: (data as any)?.site?.description ?? undefined,
@@ -148,8 +107,13 @@ export async function getHomePage(): Promise<PageData> {
   };
 
   return {
-    title: String(data.title ?? "Home"),
+    title: String(data.title ?? slug),
     blocks,
     site,
   };
+}
+
+/** ---------- ALIAS HOME ---------- */
+export async function getHomePage(): Promise<PageData> {
+  return getPage("home");
 }

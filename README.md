@@ -29,42 +29,46 @@ npx decap-server    # (en local) proxy Decap si local_backend: true
 ## Arborescence
 
 ```
-r
-├─ app/                          # App Router (layouts, pages)
+.
+├─ .github/workflows/
+│  └─ ci.yml                     # CI: build / lint / type-check / tests
+├─ app/
 │  ├─ globals.css
-│  ├─ layout.tsx
-│  └─ page.tsx
+│  ├─ layout.tsx                 # layout racine
+│  └─ page.tsx                   # page d'accueil (rend <HomeBlocks/>)
 │
-├─ components/                   # UI & sections (style)
-│  ├─ home /
-│  │  ├─ home-blocks.tsx         # rend la page à partir des "blocks"
-│  │  └─ site-header.tsx  
-       # header 
+├─ components/
+│  ├─ home/
+│  │  ├─ hero-section.tsx        # (optionnel) section héro si utilisée
+│  │  ├─ home-blocks.tsx         # RENDERER: mappe les "blocks" -> composants
+│  │  └─ site-header.tsx         # header piloté par site.meta
 │  └─ ui/
-│     ├─ scrolling-banner.tsx    # bandeau défilant (style seulement)
-│     ├─ stat-item.tsx           # carte de stat (style)
-│     └─ value-item.tsx          # item de “values” (style)
+│     ├─ scrolling-banner.tsx    # bandeau défilant (style)
+│     ├─ Stat-item.tsx           # carte de statistique (style)
+│     └─ value-item.tsx          # item de "values" (style)
 │
-├─ content/                      # Contenu éditorial (source de vérité)
-│  ├─ pages/
-│  │  └─ home.md                 # orchestre les blocs de la page        
+├─ content/
+│  └─ pages/
+│     └─ home.md                 # contenu + blocks 
 │
-├─ lib/                          # Lecture des contenus
-│  ├─ page.ts                    # getHomePage(): lit home.md & parse les blocs
-│  ├─ stats.ts                   # getStats(): lit stats.md
-│  └─ values.ts                  # getValues(): lit valuesection.md
+├─ lib/
+│  ├─ page-types.ts              # types TypeScript des blocks/pages
+│  ├─ page.ts                    # getPage()/getHomePage() + parsers (narrowers)
+│  └─ utils.ts                   # helpers génériques (cn, etc.)
 │
 ├─ public/
 │  ├─ admin/
-│  │  ├─ index.html              # SPA de Decap CMS
-│  │  └─ config.yml              # config Decap
-│  └─ uploads/                   # assets/upload CMS (optionnel)
+│  │  ├─ config.yml              # configuration Decap CMS
+│  │  └─ index.html              # UI Decap (SPA)
+│  ├─ Impact-of-work.png
+│  ├─ trait.png
+│  └─ ...                        # autres assets
 │
-├─ tailwind.config.ts (si présent)
-├─ tsconfig.json
-└─ package.json
-```
+├─ next.config.ts                # rewrite /admin -> /admin/index.html
+├─ package.json
+└─ tsconfig.json
 
+```
 ---
 
 
@@ -225,22 +229,6 @@ Rendu assuré par `components/layout/home-blocks.tsx`.
 > 3. (optionnel) champs dans `public/admin/config.yml` si on veut éditer depuis Decap.
 
 ---
-
-## Decap CMS (admin)
-
-* **UI** : `public/admin/index.html` (charge `decap-cms`)
-* **Config** : `public/admin/config.yml`
-
-  * définit le backend Git (`git-gateway` ou `test-repo` en local),
-  * `media_folder`/`public_folder`,
-  * `collections` (expose `content/pages/home.md`, `content/stats/stats.md`, etc.)
-* **Local** : si `local_backend: true` → lancer `npx decap-server`
-
----
-
-
-
-
 
 ## Ajouter un nouveau composant (nouveau “block”)
 
@@ -415,4 +403,115 @@ blocks:
 ```
 
 
+**comment ajouter une nouvelle page (exemple : `about`)** :
+
+---
+
+## Ajouter une nouvelle page (exemple : About)
+
+Le site est **multi-page** et chaque page est décrite via un fichier **Markdown** dans `content/pages/`.
+Les blocs (`blocks`) définis dans le frontmatter YAML contrôlent quels composants apparaissent et dans quel ordre.
+
+### 1. Créer le fichier de contenu
+
+Créer `content/pages/about.md` :
+
+```md
+---
+title: "About"
+description: "About page managed by Decap CMS"
+
+site:
+  name: "Keiken"
+  description: "Editable settings via Decap."
+  nav:
+    - { label: "Home", href: "/" }
+    - { label: "About", href: "/about" }
+    - { label: "Blog", href: "/blog" }
+    - { label: "Contact us", href: "/admin" }
+
+blocks:
+  - type: "header"
+
+  - type: "heading"
+    heading: "About Keiken"
+    subheading: "Who we are and what we do."
+    align: "center"
+
+  - type: "values"
+    values:
+      - { title: "Integrity", description: "We work with honesty and transparency." }
+      - { title: "Innovation", description: "Always improving, always iterating." }
+      - { title: "Collaboration", description: "Together we go further." }
+
+  - type: "banner"
+    src: "/Impact-of-work.png"
+    itemWidth: 420
+    height: 92
+    speedSeconds: 20
+    gapPx: 60
+    count: 6
+---
+```
+
+---
+
+### 2. Créer la route Next.js
+
+Dans `src/app/about/page.tsx` :
+
+```tsx
+import HomeBlocks from "@/components/home-blocks";
+import { getPage } from "@/lib/page";
+
+export default async function AboutPage() {
+  const page = await getPage("about"); // <- lit content/pages/about.md
+  return <HomeBlocks page={page} />;
+}
+```
+
+---
+
+### 3. Vérifier les composants disponibles
+
+Chaque bloc (`type: "..."`) correspond à un composant dans `components/` :
+
+* `header` → `SiteHeader`
+* `heading` → `HeadingView`
+* `stats` → `StatsViewSmart`
+* `values` → `ValuesViewSmart`
+* `banner` → `ScrollingBanner`
+
+Pour ajouter un **nouveau type de bloc**, tu devras :
+
+1. Ajouter son **type** dans `src/lib/page-types.ts`
+2. Écrire son **helper** (`asTonBloc`) dans `src/lib/page.ts`
+3. Étendre le `switch` de `renderBlock` dans `home-blocks.tsx`
+
+---
+
+### 4. Gestion avec Decap CMS
+
+Dans `public/admin/config.yml`, ajouter une entrée pour la nouvelle page :
+
+```yaml
+collections:
+  - label: "Pages"
+    name: "pages"
+    files:
+      - label: "Home"
+        name: "home"
+        file: "content/pages/home.md"
+        fields: [...]
+      - label: "About"
+        name: "about"
+        file: "content/pages/about.md"
+        fields: [...]
+```
+
+---
+
+ Après ça, la page `/about` sera disponible et éditable via **Decap CMS** (`/admin`).
+
+---
 

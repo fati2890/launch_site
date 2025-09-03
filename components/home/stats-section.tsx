@@ -1,10 +1,6 @@
 import { StatItem } from "@/components/ui/Stat-item";
-import { getStats } from "@/lib/stats";
 
-
-export default async function StatsSection() {
-  const items = await getStats();
-
+export default function StatsSection({ items }: { items: { value: string | number; title: string; description?: string }[] }) {
   return (
     <section className="py-12">
       <div className="max-w-3xl mx-auto">

@@ -1,3 +1,13 @@
+backend:
+  name: git-gateway
+  branch: main
+
+local_backend: true
+
+# Tes médias vivent à la racine de /public
+media_folder: "public"   # chemin dans le repo
+public_folder: "/"       # URL publique correspondante (ex: /Impact-of-work.png)
+
 collections:
   - label: "Pages"
     name: "pages"
@@ -5,13 +15,34 @@ collections:
       - label: "Home"
         name: "home"
         file: "content/pages/home.md"
+        format: "frontmatter"
         fields:
           - { label: "Title", name: "title", widget: "string" }
+
+          - label: "Site (optional)"
+            name: "site"
+            widget: "object"
+            required: false
+            fields:
+              - { label: "Name", name: "name", widget: "string", required: false }
+              - label: "Nav"
+                name: "nav"
+                widget: "list"
+                required: false
+                fields:
+                  - { label: "Label", name: "label", widget: "string" }
+                  - { label: "URL", name: "href", widget: "string" }
 
           - label: "Blocks"
             name: "blocks"
             widget: "list"
             types:
+              - label: "Header"
+                name: "header"
+                widget: "object"
+                fields:
+                  - { label: "Type", name: "type", widget: "hidden", default: "header" }
+
               - label: "Heading"
                 name: "heading"
                 widget: "object"
@@ -19,7 +50,7 @@ collections:
                   - { label: "Type", name: "type", widget: "hidden", default: "heading" }
                   - { label: "Heading", name: "heading", widget: "string" }
                   - { label: "Subheading", name: "subheading", widget: "string", required: false }
-                  - { label: "Align", name: "align", widget: "select", options: ["left", "center", "right"], required: false }
+                  - { label: "Align", name: "align", widget: "select", options: ["left","center","right"], required: false }
 
               - label: "Stats"
                 name: "stats"
@@ -34,14 +65,28 @@ collections:
                       - { label: "Title", name: "title", widget: "string" }
                       - { label: "Description", name: "description", widget: "text", required: false }
 
+              - label: "Values"
+                name: "values"
+                widget: "object"
+                fields:
+                  - { label: "Type", name: "type", widget: "hidden", default: "values" }
+                  - label: "Values"
+                    name: "values"
+                    widget: "list"
+                    fields:
+                      - { label: "Title", name: "title", widget: "string" }
+                      - { label: "Description", name: "description", widget: "text" }
+
               - label: "Banner"
                 name: "banner"
                 widget: "object"
                 fields:
                   - { label: "Type", name: "type", widget: "hidden", default: "banner" }
-                  - { label: "Image", name: "src", widget: "image" }
-                  - { label: "Item Width (px)", name: "itemWidth", widget: "number", value_type: "int" }
-                  - { label: "Height (px)", name: "height", widget: "number", value_type: "int", required: false }
-                  - { label: "Speed (s)", name: "speedSeconds", widget: "number", value_type: "int", required: false }
-                  - { label: "Gap (px)", name: "gapPx", widget: "number", value_type: "int", required: false }
-                  - { label: "Count", name: "count", widget: "number", value_type: "int", required: false }
+                  # Tu peux garder "string" si tu tapes l'URL à la main (/Impact-of-work.png)
+                  # ou mettre "image" si tu veux uploader via l'UI dans /public
+                  - { label: "Image URL", name: "src", widget: "string" }
+                  - { label: "Item Width (px)", name: "itemWidth", widget: "number" }
+                  - { label: "Height (px)", name: "height", widget: "number", required: false }
+                  - { label: "Speed (s)", name: "speedSeconds", widget: "number", required: false }
+                  - { label: "Gap (px)", name: "gapPx", widget: "number", required: false }
+                  - { label: "Count", name: "count", widget: "number", required: false }

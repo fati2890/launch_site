@@ -26,20 +26,15 @@ export function ScrollingBanner({
   speedSeconds = 22,
   className,
 }: ScrollingBannerProps) {
-  // si import statique: on connaît width/height réels du fichier
   const realW =
     typeof src === "object" && "width" in src && "height" in src
       ? Math.round((height * src.width) / src.height)
-      : itemWidth!; // <- si string, DOIT être fourni
-
-  // largeur exacte d’un bloc (image + gap) en pixels entiers
+      : itemWidth!; 
   const block = Math.round(realW + gapPx);
 
-  // largeur à défiler pour boucler sans saut = largeur d'une moitié de piste
   const halfTrack = block * count; // pixels
 
   const style: React.CSSProperties = {
-    // on passe des valeurs exactes à l’anim
     ["--speed" as any]: `${speedSeconds}s`,
     ["--halfTrack" as any]: `${halfTrack}px`,
   };
