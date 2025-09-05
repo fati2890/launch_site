@@ -6,3 +6,4 @@ export default async function Home() {
   const page = await getPage("home"); 
   return <HomeBlocks page={page} />;  
 }
+ 

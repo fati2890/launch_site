@@ -1,7 +1,6 @@
 // components/blocks/page-blocks.tsx
 import { type PageBlock, type PageData } from "@/lib/page-types";
 import SiteHeader from "@/components/layout/site-header";
-import SiteFooter from "@/components/layout/site-footer";
 import { ScrollingBanner } from "@/components/ui/scrolling-banner";
 import { StatItem } from "@/components/ui/Stat-item";
 import { ValueItem } from "@/components/ui/value-item";

@@ -1,16 +1,22 @@
 // components/ui/scrolling-banner.tsx
 import * as React from "react";
-import Image, { StaticImageData } from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import { cn } from "@/lib/utils";
 
 type SrcType = string | StaticImageData;
 
+// typer les variables CSS custom:
+type CSSVars = React.CSSProperties & {
+  "--speed"?: string;
+  "--halfTrack"?: string;
+};
+
 type ScrollingBannerProps = {
-  src: SrcType;          // peut être import statique ou string "/…"
+  src: SrcType;
   alt?: string;
-  height?: number;       // hauteur d’affichage
-  itemWidth?: number;    // requis si src est string (largeur réelle du PNG/SVG)
-  count?: number;        // nb d’items par moitié
+  height?: number;
+  itemWidth?: number; // requis si src est string
+  count?: number;
   gapPx?: number;
   speedSeconds?: number;
   className?: string;
@@ -26,25 +32,23 @@ export function ScrollingBanner({
   speedSeconds = 22,
   className,
 }: ScrollingBannerProps) {
+  // si import statique, on connaît width/height réels
   const realW =
     typeof src === "object" && "width" in src && "height" in src
       ? Math.round((height * src.width) / src.height)
-      : itemWidth!; 
+      : (itemWidth ?? 0); // si string, itemWidth doit être fourni
+
   const block = Math.round(realW + gapPx);
+  const halfTrack = block * count;
 
-  const halfTrack = block * count; // pixels
-
-  const style: React.CSSProperties = {
-    ["--speed" as any]: `${speedSeconds}s`,
-    ["--halfTrack" as any]: `${halfTrack}px`,
+  const style: CSSVars = {
+    "--speed": `${speedSeconds}s`,
+    "--halfTrack": `${halfTrack}px`,
   };
 
   return (
     <div
-      className={cn(
-        "relative w-full overflow-hidden border-y border-border",
-        className
-      )}
+      className={cn("relative w-full overflow-hidden border-y border-border", className)}
       style={style}
       aria-label={alt}
     >
@@ -71,25 +75,23 @@ function BannerRow({
   count: number;
   ariaHidden?: boolean;
 }) {
-  const Item = (i: number) => (
-    <Image
-      key={i}
-      src={src as any}
-      alt=""
-      height={height}
-      width={width}
-      className="shrink-0 select-none"
-      priority={i < 2}
-    />
-  );
-
   return (
     <div
       className="flex items-center shrink-0"
       style={{ columnGap: `${gapPx}px` }}
       aria-hidden={ariaHidden ? "true" : undefined}
     >
-      {Array.from({ length: count }).map((_, i) => Item(i))}
+      {Array.from({ length: count }).map((_, i) => (
+        <Image
+          key={i}
+          src={src}             
+          alt=""
+          height={height}
+          width={width}
+          className="shrink-0 select-none"
+          priority={i < 2}
+        />
+      ))}
     </div>
   );
 }
