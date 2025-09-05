@@ -4,6 +4,7 @@ import SiteHeader from "@/components/layout/site-header";
 import { ScrollingBanner } from "@/components/ui/scrolling-banner";
 import { StatItem } from "@/components/ui/Stat-item";
 import { ValueItem } from "@/components/ui/value-item";
+import HeroSection from "../home/hero-section";
 
 function HeadingView(props: { heading: string; subheading?: string; align?: "left" | "center" | "right" }) {
   const alignClass =
@@ -61,7 +62,7 @@ function renderBlock(block: PageBlock, index: number, site?: PageData["site"]) {
 
     case "heading":
       return (
-        <HeadingView
+        <HeroSection
           key={`heading-${index}`}
           heading={block.heading}
           subheading={block.subheading}
