@@ -1,20 +1,7 @@
 ---
 title: Home
-description: Home page managed by Decap CMS
-site:
-  name: Keiken
-  description: Editable settings via Decap.
-  nav:
-    - label: Home
-      href: /
-    - label: About
-      href: /about
-    - label: Blog
-      href: /blog
-    - label: Contact us
-      href: /admin
+
 blocks:
-  - type: header
   - type: heading
     heading: Keiken Digital Solutions
     subheading: "Building Trust "

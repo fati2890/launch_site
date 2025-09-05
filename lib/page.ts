@@ -13,6 +13,7 @@ import type {
   ValuesBlock,
   BannerBlock,
   HeaderBlock,
+  FooterBlock,
 } from "./page-types";
 
 /** ---------- HELPERS DE NARROWING (parse securisé des blocks) ---------- */
@@ -69,6 +70,20 @@ const asBanner = (b: any): BannerBlock | null =>
       }
     : null;
 
+const asFooter = (b: any): FooterBlock | null =>
+  b?.type === "footer"
+    ? {
+        type: "footer",
+        text: b?.text ? String(b.text) : undefined,
+        useSiteNav: b?.useSiteNav === true ? true : undefined,
+        links: Array.isArray(b?.links)
+          ? b.links
+              .filter((x: any) => x && typeof x.label === "string" && typeof x.href === "string")
+              .map((x: any) => ({ label: String(x.label), href: String(x.href) }))
+          : undefined,
+      }
+    : null;
+
 const asHeader = (b: any): HeaderBlock | null =>
   b?.type === "header" ? { type: "header" } : null;
 
@@ -85,15 +100,16 @@ export async function getPage(slug: string): Promise<PageData> {
     : [];
 
   const blocks = blocksRaw
-    .map(
-      (b: unknown) =>
-        asHeader(b as any) ||
-        asHeading(b as any) ||
-        asStats(b as any) ||
-        asValues(b as any) ||
-        asBanner(b as any)
-    )
-    .filter(Boolean) as PageBlock[];
+  .map(
+    (b: unknown) =>
+      asHeader(b as any) ||
+      asHeading(b as any) ||
+      asStats(b as any) ||
+      asValues(b as any) ||
+      asBanner(b as any) ||
+      asFooter(b as any)     
+  )
+  .filter(Boolean) as PageBlock[];
 
   // site meta (optionnelle) -> site: { name, description, nav[] }
   const site: SiteMeta = {

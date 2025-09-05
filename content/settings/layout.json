@@ -1,0 +1,19 @@
+{
+  "site": {
+    "name": "Keiken",
+    "description": "Editable settings via Decap.",
+    "nav": [
+      { "label": "Home", "href": "/" },
+      { "label": "About", "href": "/about" },
+      { "label": "Blog", "href": "/blog" },
+      { "label": "Contact", "href": "/admin/index.html" }
+    ]
+  },
+  "footer": {
+    "text": "© Keiken. All rights reserved.",
+    "links": [
+      { "label": "Privacy", "href": "/privacy" },
+      { "label": "Terms", "href": "/terms" }
+    ]
+  }
+}

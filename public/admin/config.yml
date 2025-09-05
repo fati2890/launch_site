@@ -4,89 +4,102 @@ backend:
 
 local_backend: true
 
-# Tes médias vivent à la racine de /public
-media_folder: "public"   # chemin dans le repo
-public_folder: "/"       # URL publique correspondante (ex: /Impact-of-work.png)
+media_folder: "public"
+public_folder: "/"
 
 collections:
-  - label: "Pages"
-    name: "pages"
+  - label: "Settings"
+    name: "settings"
     files:
-      - label: "Home"
-        name: "home"
-        file: "content/pages/home.md"
-        format: "frontmatter"
+      - label: "Layout (Header & Footer)"
+        name: "layout"
+        file: "content/settings/layout.json"
         fields:
-          - { label: "Title", name: "title", widget: "string" }
-
-          - label: "Site (optional)"
+          - label: "Site"
             name: "site"
             widget: "object"
-            required: false
             fields:
-              - { label: "Name", name: "name", widget: "string", required: false }
-              - label: "Nav"
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Description", name: "description", widget: "string", required: false }
+              - label: "Navigation"
                 name: "nav"
                 widget: "list"
-                required: false
+                summary: "{{fields.label}} → {{fields.href}}"
                 fields:
                   - { label: "Label", name: "label", widget: "string" }
-                  - { label: "URL", name: "href", widget: "string" }
+                  - { label: "URL",   name: "href",  widget: "string" }
 
-          - label: "Blocks"
-            name: "blocks"
-            widget: "list"
-            types:
-              - label: "Header"
-                name: "header"
-                widget: "object"
+          - label: "Footer"
+            name: "footer"
+            widget: "object"
+            fields:
+              - { label: "Text", name: "text", widget: "string", required: false }
+              - label: "Links"
+                name: "links"
+                widget: "list"
+                summary: "{{fields.label}} → {{fields.href}}"
                 fields:
-                  - { label: "Type", name: "type", widget: "hidden", default: "header" }
+                  - { label: "Label", name: "label", widget: "string" }
+                  - { label: "URL",   name: "href",  widget: "string" }
 
-              - label: "Heading"
-                name: "heading"
-                widget: "object"
+  - label: "Pages"
+    name: "pages"
+    folder: "content/pages"
+    create: true
+    slug: "{{slug}}"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+
+      - { label: "Show Header", name: "showHeader", widget: "boolean", default: true, required: false }
+      - { label: "Show Footer", name: "showFooter", widget: "boolean", default: true, required: false }
+
+      - label: "Blocks"
+        name: "blocks"
+        widget: "list"
+        types:
+          - label: "Heading"
+            name: "heading"
+            widget: "object"
+            fields:
+              - { label: "Type", name: "type", widget: "hidden", default: "heading" }
+              - { label: "Heading", name: "heading", widget: "string" }
+              - { label: "Subheading", name: "subheading", widget: "string", required: false }
+              - { label: "Align", name: "align", widget: "select", options: ["left","center","right"], required: false }
+
+          - label: "Stats"
+            name: "stats"
+            widget: "object"
+            fields:
+              - { label: "Type", name: "type", widget: "hidden", default: "stats" }
+              - label: "Items"
+                name: "items"
+                widget: "list"
                 fields:
-                  - { label: "Type", name: "type", widget: "hidden", default: "heading" }
-                  - { label: "Heading", name: "heading", widget: "string" }
-                  - { label: "Subheading", name: "subheading", widget: "string", required: false }
-                  - { label: "Align", name: "align", widget: "select", options: ["left","center","right"], required: false }
+                  - { label: "Value", name: "value", widget: "string" }
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Description", name: "description", widget: "text", required: false }
 
-              - label: "Stats"
-                name: "stats"
-                widget: "object"
-                fields:
-                  - { label: "Type", name: "type", widget: "hidden", default: "stats" }
-                  - label: "Items"
-                    name: "items"
-                    widget: "list"
-                    fields:
-                      - { label: "Value", name: "value", widget: "string" }
-                      - { label: "Title", name: "title", widget: "string" }
-                      - { label: "Description", name: "description", widget: "text", required: false }
-
+          - label: "Values"
+            name: "values"
+            widget: "object"
+            fields:
+              - { label: "Type", name: "type", widget: "hidden", default: "values" }
               - label: "Values"
                 name: "values"
-                widget: "object"
+                widget: "list"
                 fields:
-                  - { label: "Type", name: "type", widget: "hidden", default: "values" }
-                  - label: "Values"
-                    name: "values"
-                    widget: "list"
-                    fields:
-                      - { label: "Title", name: "title", widget: "string" }
-                      - { label: "Description", name: "description", widget: "text" }
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Description", name: "description", widget: "text" }
 
-              - label: "Banner"
-                name: "banner"
-                widget: "object"
-                fields:
-                  - { label: "Type", name: "type", widget: "hidden", default: "banner" }
-                  # Tu peux garder "string" si tu tapes l'URL à la main (/Impact-of-work.png)
-                  # ou mettre "image" si tu veux uploader via l'UI dans /public
-                  - { label: "Image URL", name: "src", widget: "string" }
-                  - { label: "Item Width (px)", name: "itemWidth", widget: "number" }
-                  - { label: "Height (px)", name: "height", widget: "number", required: false }
-                  - { label: "Speed (s)", name: "speedSeconds", widget: "number", required: false }
-                  - { label: "Gap (px)", name: "gapPx", widget: "number", required: false }
-                  - { label: "Count", name: "count", widget: "number", required: false }
+          - label: "Banner"
+            name: "banner"
+            widget: "object"
+            fields:
+              - { label: "Type", name: "type", widget: "hidden", default: "banner" }
+              - { label: "Image URL", name: "src", widget: "string" }
+              - { label: "Item Width (px)", name: "itemWidth", widget: "number" }
+              - { label: "Height (px)", name: "height", widget: "number", required: false }
+              - { label: "Speed (s)", name: "speedSeconds", widget: "number", required: false }
+              - { label: "Gap (px)", name: "gapPx", widget: "number", required: false }
+              - { label: "Count", name: "count", widget: "number", required: false }

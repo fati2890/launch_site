@@ -1,39 +1,28 @@
-import { getHomePage, type PageBlock } from "@/lib/page";
-import StatsSection from "@/components/home/stats-section";       // ⚠️ export default
-import ValuesSection from "@/components/home/values-section";     // ⚠️ export default
+// components/blocks/page-blocks.tsx
+import { type PageBlock, type PageData } from "@/lib/page-types";
+import SiteHeader from "@/components/layout/site-header";
+import SiteFooter from "@/components/layout/site-footer";
 import { ScrollingBanner } from "@/components/ui/scrolling-banner";
-import { StatItem } from "@/components/ui/Stat-item";               // si besoin pour inline
-import { ValueItem } from "@/components/ui/value-item";             // si besoin pour inline
+import { StatItem } from "@/components/ui/Stat-item";
+import { ValueItem } from "@/components/ui/value-item";
 
-import SiteHeader from "@/components/home/site-header";
-
-
-/** Heading simple (style local) */
 function HeadingView(props: { heading: string; subheading?: string; align?: "left" | "center" | "right" }) {
   const alignClass =
     props.align === "center" ? "text-center" : props.align === "right" ? "text-right" : "text-left";
   return (
     <section className={`py-10 ${alignClass}`}>
       <h1 className="text-5xl md:text-6xl font-bold text-sky-500">{props.heading}</h1>
-      {props.subheading ? (
-        <p className="mt-3 text-xl md:text-2xl text-muted-foreground">{props.subheading}</p>
-      ) : null}
+      {props.subheading ? <p className="mt-3 text-xl md:text-2xl text-muted-foreground">{props.subheading}</p> : null}
     </section>
   );
 }
 
-async function StatsViewSmart(props: { source?: "lib"; items?: { value: string | number; title: string; description?: string }[] }) {
-  // si source=lib -> réutilise TA section stylée (getStats + grid + paddings déjà faits)
-  if (props.source === "lib") {
-    return <StatsSection />;
-  }
-  // sinon (inline), on rend une version légère localement
-  const items = props.items ?? [];
+function StatsView(props: { items: { value: string | number; title: string; description?: string }[] }) {
   return (
     <section className="py-12">
       <div className="max-w-3xl mx-auto">
         <div className="grid gap-8 sm:grid-cols-2">
-          {items.map((s, i) => (
+          {props.items.map((s, i) => (
             <StatItem key={`${s.title}-${i}`} value={s.value} title={s.title} description={s.description} />
           ))}
         </div>
@@ -42,14 +31,10 @@ async function StatsViewSmart(props: { source?: "lib"; items?: { value: string |
   );
 }
 
-async function ValuesViewSmart(props: { source?: "lib"; values?: { title: string; description: string }[] }) {
-  if (props.source === "lib") {
-    return <ValuesSection />; // ta section stylée existante
-  }
-  const values = props.values ?? [];
+function ValuesView(props: { values: { title: string; description: string }[] }) {
   return (
     <section className="max-w-xl mx-auto">
-      {values.map((it, i) => (
+      {props.values.map((it, i) => (
         <ValueItem key={`${it.title}-${i}`} index={i + 1} title={it.title} description={it.description} />
       ))}
     </section>
@@ -70,11 +55,11 @@ function BannerView(props: { src: string; itemWidth: number; height?: number; sp
   );
 }
 
-/** RENDERER : mappe chaque block -> composant UI (stylé) */
-function renderBlock(block: PageBlock, index: number,site?: any) {
+function renderBlock(block: PageBlock, index: number, site?: PageData["site"]) {
   switch (block.type) {
     case "header":
       return <SiteHeader key={`header-${index}`} site={site} />;
+
     case "heading":
       return (
         <HeadingView
@@ -86,22 +71,10 @@ function renderBlock(block: PageBlock, index: number,site?: any) {
       );
 
     case "stats":
-      return (
-        <StatsViewSmart
-          key={`stats-${index}`}
-          source={block.source}
-          items={block.items}
-        />
-      );
+      return <StatsView key={`stats-${index}`} items={block.items ?? []} />;
 
     case "values":
-      return (
-        <ValuesViewSmart
-          key={`values-${index}`}
-          source={block.source}
-          values={block.values}
-        />
-      );
+      return <ValuesView key={`values-${index}`} values={block.values ?? []} />;
 
     case "banner":
       return (
@@ -115,12 +88,11 @@ function renderBlock(block: PageBlock, index: number,site?: any) {
           count={block.count}
         />
       );
+
+
   }
 }
 
-export default async function HomeBlocks() {
-  const page = await getHomePage();
-  if (!page.blocks.length) return null;
+export default function PageBlocks({ page }: { page: PageData }) {
   return <>{page.blocks.map((b, i) => renderBlock(b, i, page.site))}</>;
 }
-

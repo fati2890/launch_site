@@ -1,6 +1,5 @@
 // components/layout/site-header.tsx
 import Link from "next/link";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Button } from "@/components/ui/button";
 
 type SiteNav = { label: string; href: string };
@@ -33,7 +32,6 @@ export default function SiteHeader({ site }: { site?: SiteMeta }) {
               <Link href={last.href}>{last.label}</Link>
             </Button>
           ) : null}
-          
         </nav>
       </div>
     </header>
