@@ -9,8 +9,16 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const eslintConfig = [
+export default [
+  // Presets Next.js (via compat)
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-];
 
-export default eslintConfig;
+  // Override: autoriser `any` uniquement dans lib/
+  {
+    files: ["lib/**/*.ts", "lib/**/*.tsx"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+
+    },
+  },
+];
