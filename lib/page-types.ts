@@ -60,7 +60,4 @@ export type PageData = {
   blocks: PageBlock[];
   site?: SiteMeta;
 
-  showHeader?: boolean;
-  showFooter?: boolean;
-  footer?: FooterData;
 };

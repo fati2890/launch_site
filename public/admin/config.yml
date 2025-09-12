@@ -51,9 +51,7 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
 
-      - { label: "Show Header", name: "showHeader", widget: "boolean", default: true, required: false }
-      - { label: "Show Footer", name: "showFooter", widget: "boolean", default: true, required: false }
-
+     
       - label: "Blocks"
         name: "blocks"
         widget: "list"

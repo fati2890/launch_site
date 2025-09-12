@@ -10,20 +10,9 @@ export default async function NewsletterPage() {
      const { site, footer } = await getLayout();
   
 const page = await getPage("newsletter");
-  const shouldShowFooter = page.showFooter !== false; // true par défaut si non défini
-
-  return (
-    <>
-   
-      {page.showHeader !== false && <SiteHeader site={page.site}  />}
 
       <main>
         <HomeBlocks page={page} />
       </main>
 
-      {shouldShowFooter && footer ? (
-        <SiteFooter text={footer.text} links={footer.links} />
-      ) : null}
-    </>
-  );
 }

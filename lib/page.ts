@@ -139,9 +139,7 @@ return {
   title: String(dataAny.title ?? slug),
   blocks,
   site,
-  showHeader: typeof dataAny.showHeader === "boolean" ? dataAny.showHeader : undefined,
-  showFooter: typeof dataAny.showFooter === "boolean" ? dataAny.showFooter : undefined,
-  footer, // 👈
+
 };
 }
 
