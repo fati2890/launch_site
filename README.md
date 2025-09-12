@@ -1,6 +1,3 @@
-Parfait — voilà un **README mis à jour** avec la partie **routing** telle qu’on l’a mise en place (une page = un fichier Markdown `content/pages/<slug>.md` + une route Next `app/<slug>/page.tsx` qui rend les *blocks* via `PageBlocks`). J’ai aussi remplacé les mentions de `home-blocks.tsx` par `components/blocks/page-blocks.tsx` et noté le rewrite `/admin → /admin/index.html`.
-
----
 
 # Keiken – Next.js + shadcn/ui + Decap (Headless CMS)
 
@@ -33,16 +30,14 @@ npx decap-server    # (local) proxy Decap si local_backend: true
 │  ├─ globals.css
 │  ├─ layout.tsx                   # layout racine (header/footer globaux)
 │  └─ page.tsx                     # page d'accueil (rend <PageBlocks/>)
-│  # Exemple d’autre page :
-│  # └─ about/
-│  #    └─ page.tsx                # rend <PageBlocks/> avec getPage("about")
-│
+│  # └─ newsletter/
+│  #    └─ page.tsx                # rend <PageBlocks/>  
 ├─ components/
 │  ├─ blocks/
 │  │  └─ page-blocks.tsx           # RENDERER: mappe les "blocks" -> composants UI
 │  ├─ layout/
-│  │  ├─ site-header.tsx           # header (piloté par site.meta)
-│  │  └─ site-footer.tsx           # footer (optionnel)
+│  │  ├─ site-header.tsx           # header 
+│  │  └─ site-footer.tsx           # footer 
 │  └─ ui/
 │     ├─ scrolling-banner.tsx      # bandeau défilant (style)
 │     ├─ Stat-item.tsx             # carte de statistique (style)
@@ -134,10 +129,7 @@ export default async function AboutPage() {
 }
 ```
 
-> 💡 **Header/Footer** : pour éviter les doublons, on les rend **dans `app/layout.tsx`** (globaux).
-> Si tu avais un block `{ type: "header" }` dans un `.md`, enlève-le ou ignore-le côté renderer.
 
----
 
 ## `home.md` (structure des *blocks*)
 
@@ -231,9 +223,9 @@ export default {
 ```
 
 * **`public/admin/config.yml`** : déclare la collection de pages et **les champs des blocks**.
-  Pour rendre *About* éditable, ajoute un item “About” pointant sur `content/pages/about.md` avec les mêmes champs que Home.
 
-Exemple minimal :
+
+Exemple  :
 
 ```yaml
 backend:
@@ -267,10 +259,4 @@ collections:
 
 ---
 
-## Notes pratiques
 
-* **Pas de doublon de header/footer** : on les garde **dans le layout** (globaux).
-* **Thème clair/sombre** : géré via classes `:root` / `.dark` dans `app/globals.css`. Mettre `class="dark"` sur `<html>` ou `<body>` (ou utiliser un ThemeProvider) bascule toutes les couleurs Tailwind CSS variables (`bg-background`, `text-foreground`, `text-primary`, etc.).
-* **Couleurs personnalisées** : utilisez `text-primary`, `text-secondary`, etc. → reflètent automatiquement le thème (au lieu de `text-sky-*` en dur).
-
----
