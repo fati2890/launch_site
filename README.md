@@ -46,7 +46,7 @@ npx decap-server    # (local) proxy Decap si local_backend: true
 ├─ content/
 │  └─ pages/
 │     └─ home.md                   # contenu + blocks (page d’accueil)
-│     # (une page = un fichier .md : about.md, services.md, etc.)
+│     # (une page = un fichier .md : newsletter.md, services.md, etc.)
 │
 ├─ lib/
 │  ├─ page-types.ts                # types TypeScript des blocks/pages
@@ -70,7 +70,7 @@ npx decap-server    # (local) proxy Decap si local_backend: true
 
 ## Routing (pages multiples) — **ce qu’on utilise**
 
-Nous utilisons le **routing par système de fichiers** de Next (Option A) :
+Nous utilisons le **routing par système de fichiers** de Next :
 
 * **Une URL `/slug` = un fichier `content/pages/slug.md` + un fichier `app/slug/page.tsx`.**
 * Le composant `app/<slug>/page.tsx` lit le Markdown via `getPage(slug)` et **rend la page avec `PageBlocks`**, qui transforme chaque *block* du front-matter en composant UI.
@@ -88,25 +88,25 @@ export default async function Home() {
 }
 ```
 
-### Exemple d’une nouvelle page `/about`
+### Exemple d’une nouvelle page `/newsletter`
 
-1. **Contenu** : crée `content/pages/about.md`
+1. **Contenu** : crée `content/pages/newsletter.md`
    (même structure que `home.md`, avec un tableau `blocks:`)
 
 ```md
 ---
-title: "About"
-description: "About page managed by Decap CMS"
+title: "newsletter"
+description: "newsletter page managed by Decap CMS"
 
 site:
   name: "Keiken"
   nav:
     - { label: "Home", href: "/" }
-    - { label: "About", href: "/about" }
+    - { label: "newsletter", href: "/newsletter" }
 
 blocks:
   - type: "heading"
-    heading: "About Keiken"
+    heading: "newsletter Keiken"
     subheading: "Who we are and what we do."
     align: "center"
 
@@ -117,14 +117,14 @@ blocks:
 ---
 ```
 
-2. **Route Next** : crée `app/about/page.tsx`
+2. **Route Next** : crée `app/newsletter/page.tsx`
 
 ```tsx
 import PageBlocks from "@/components/blocks/page-blocks";
 import { getPage } from "@/lib/page";
 
-export default async function AboutPage() {
-  const page = await getPage("about");   // lit content/pages/about.md
+export default async function newsletterPage() {
+  const page = await getPage("newsletter");   // lit content/pages/newsletter.md
   return <PageBlocks page={page} />;
 }
 ```
@@ -140,7 +140,7 @@ site:
   name: "Keiken"
   nav:
     - { label: "Home", href: "/" }
-    - { label: "About", href: "/about" }
+    - { label: "newsletter", href: "/newsletter" }
 
 blocks:
   - type: "heading"
@@ -245,9 +245,9 @@ collections:
         name: "home"
         file: "content/pages/home.md"
         fields: [ ... mêmes champs/blocks ... ]
-      - label: "About"
-        name: "about"
-        file: "content/pages/about.md"
+      - label: "newsletter"
+        name: "newsletter"
+        file: "content/pages/newsletter.md"
         fields: [ ... mêmes champs/blocks ... ]
 ```
 
