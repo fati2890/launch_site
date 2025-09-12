@@ -12,7 +12,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       
         <body className="min-h-screen flex flex-col">
           <ThemeProvider>
-        <SiteHeader site={site} />
+        
         <main className="flex-1">{children}</main>
         {footer ? <Footer text={footer.text} links={footer.links} /> : null}
         </ThemeProvider>

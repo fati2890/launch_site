@@ -121,21 +121,28 @@ export async function getPage(slug: string): Promise<PageData> {
           .map((it: any) => ({ label: String(it.label), href: String(it.href) }))
       : undefined,
   };
-    const showHeader =
-    typeof (data as any).showHeader === "boolean" ? (data as any).showHeader : true;
+   // à l’intérieur de getPage(...)
+const dataAny = data as any;
 
-  const showFooter =
-    typeof (data as any).showFooter === "boolean" ? (data as any).showFooter : true;
+const footer = dataAny?.footer && typeof dataAny.footer === "object"
+  ? {
+      text: typeof dataAny.footer.text === "string" ? dataAny.footer.text : undefined,
+      links: Array.isArray(dataAny.footer.links)
+        ? dataAny.footer.links
+            .filter((l: any) => l && typeof l.label === "string" && typeof l.href === "string")
+            .map((l: any) => ({ label: String(l.label), href: String(l.href) }))
+        : undefined,
+    }
+  : undefined;
 
-
-
-  return {
-    title: String(data.title ?? slug),
-    blocks,
-    site,
-    showHeader,   
-    showFooter,   
-  };
+return {
+  title: String(dataAny.title ?? slug),
+  blocks,
+  site,
+  showHeader: typeof dataAny.showHeader === "boolean" ? dataAny.showHeader : undefined,
+  showFooter: typeof dataAny.showFooter === "boolean" ? dataAny.showFooter : undefined,
+  footer, // 👈
+};
 }
 
 /** ---------- ALIAS HOME ---------- */

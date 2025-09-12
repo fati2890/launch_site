@@ -54,6 +54,7 @@ export type PageBlock =
   | HeaderBlock
   | FooterBlock; // <- ajouté
 
+  export type FooterData = { text?: string; links?: FooterLink[] };
 export type PageData = {
   title: string;
   blocks: PageBlock[];
@@ -61,4 +62,5 @@ export type PageData = {
 
   showHeader?: boolean;
   showFooter?: boolean;
+  footer?: FooterData;
 };
