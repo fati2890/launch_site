@@ -121,11 +121,20 @@ export async function getPage(slug: string): Promise<PageData> {
           .map((it: any) => ({ label: String(it.label), href: String(it.href) }))
       : undefined,
   };
+    const showHeader =
+    typeof (data as any).showHeader === "boolean" ? (data as any).showHeader : true;
+
+  const showFooter =
+    typeof (data as any).showFooter === "boolean" ? (data as any).showFooter : true;
+
+
 
   return {
     title: String(data.title ?? slug),
     blocks,
     site,
+    showHeader,   
+    showFooter,   
   };
 }
 

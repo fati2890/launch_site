@@ -35,7 +35,7 @@ export type BannerBlock = {
 
 export type HeaderBlock = { type: "header" };
 
-// --- ✅ AJOUTS POUR LE FOOTER ---
+// --- AJOUTS POUR LE FOOTER ---
 export type FooterLink = { label: string; href: string };
 
 export type FooterBlock = {
@@ -45,7 +45,7 @@ export type FooterBlock = {
   useSiteNav?: boolean; // si true: reprend site.nav
 };
 
-// --- ✅ Étendre l’union ---
+// ---  Étendre l’union ---
 export type PageBlock =
   | HeadingBlock
   | StatsBlock
@@ -58,4 +58,7 @@ export type PageData = {
   title: string;
   blocks: PageBlock[];
   site?: SiteMeta;
+
+  showHeader?: boolean;
+  showFooter?: boolean;
 };

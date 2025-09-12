@@ -21,11 +21,11 @@ export function ValueItem({ index, title, description, className }: ValueItemPro
       aria-label={title}
     >
       <div>
-        <h3 className="relative inline-block leading-none font-light text-sky-500 text-[clamp(2.25rem,6vw,4.25rem)]">
+        <h3 className="relative inline-block leading-none font-light text-primary text-[clamp(2.25rem,6vw,4.25rem)]">
           {title}
 
           <Image
-            src="/trait.png"   
+            src="/trait.png"
             alt=""
             width={200}
             height={10}
@@ -39,7 +39,7 @@ export function ValueItem({ index, title, description, className }: ValueItemPro
       </div>
 
       <div
-        className="select-none pr-1 font-light text-sky-500 text-4xl md:text-5xl"
+        className="select-none pr-1 font-light text-primary text-4xl md:text-5xl"
         aria-hidden="true"
       >
         {num}

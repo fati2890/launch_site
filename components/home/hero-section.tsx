@@ -11,7 +11,7 @@ export default function HeroSection({ heading, subheading, align = "center" }: H
 
   return (
     <section className={`py-16 ${alignClass}`}>
-      <h1 className="text-5xl md:text-6xl font-bold text-sky-500">{heading}</h1>
+      <h1 className="text-5xl md:text-6xl font-bold text-primary">{heading}</h1>
       {subheading ? (
         <h2 className="mt-4 text-xl md:text-2xl text-muted-foreground">{subheading}</h2>
       ) : null}

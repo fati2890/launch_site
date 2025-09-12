@@ -1,22 +1,13 @@
 // components/blocks/page-blocks.tsx
 import { type PageBlock, type PageData } from "@/lib/page-types";
 import SiteHeader from "@/components/layout/site-header";
+import SiteFooter from "@/components/layout/site-footer"; // <- doit exister
 import { ScrollingBanner } from "@/components/ui/scrolling-banner";
 import { StatItem } from "@/components/ui/Stat-item";
 import { ValueItem } from "@/components/ui/value-item";
-import HeroSection from "../home/hero-section";
+import HeroSection from "@/components/home/hero-section";
 
-function HeadingView(props: { heading: string; subheading?: string; align?: "left" | "center" | "right" }) {
-  const alignClass =
-    props.align === "center" ? "text-center" : props.align === "right" ? "text-right" : "text-left";
-  return (
-    <section className={`py-10 ${alignClass}`}>
-      <h1 className="text-5xl md:text-6xl font-bold text-sky-500">{props.heading}</h1>
-      {props.subheading ? <p className="mt-3 text-xl md:text-2xl text-muted-foreground">{props.subheading}</p> : null}
-    </section>
-  );
-}
-
+/** Helpers de rendu de sous-blocs */
 function StatsView(props: { items: { value: string | number; title: string; description?: string }[] }) {
   return (
     <section className="py-12">
@@ -55,6 +46,12 @@ function BannerView(props: { src: string; itemWidth: number; height?: number; sp
   );
 }
 
+/** Utilitaire: savoir si un type de bloc est déjà présent (éviter doublon header/footer) */
+function has(blocks: PageBlock[], type: PageBlock["type"]) {
+  return blocks.some((b) => b.type === type);
+}
+
+/** Mappe chaque block -> composant UI */
 function renderBlock(block: PageBlock, index: number, site?: PageData["site"]) {
   switch (block.type) {
     case "header":
@@ -89,10 +86,26 @@ function renderBlock(block: PageBlock, index: number, site?: PageData["site"]) {
         />
       );
 
+    case "footer":
+      // Nécessite d’avoir déclaré FooterBlock dans tes types (PageBlock)
+      return <SiteFooter key={`footer-${index}`} site={site} />;
 
+    default:
+      return null;
   }
 }
 
-export default function PageBlocks({ page }: { page: PageData }) {
-  return <>{page.blocks.map((b, i) => renderBlock(b, i, page.site))}</>;
+// components/blocks/page-blocks.tsx
+import type { SiteMeta } from "@/lib/page-types";
+
+export default function PageBlocks({ page, siteFromLayout }: { page: PageData; siteFromLayout?: SiteMeta }) {
+  const site = siteFromLayout ?? page.site;
+  return (
+    <>
+      {page.blocks.map((b, i) => {
+        if (b.type === "header") return null; // on saute le header si le layout en a un
+        return renderBlock(b, i, site);
+      })}
+    </>
+  );
 }

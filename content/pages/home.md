@@ -48,12 +48,5 @@ blocks:
       - value: "100"
         title: Entreprises
         description: Satisfaites
-  - type: banner
-    src: /Impact-of-work.png
-    itemWidth: 420
-    height: 92
-    speedSeconds: 24
-    gapPx: 80
-    count: 8
-  - type: stats
+
 ---

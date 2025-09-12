@@ -12,7 +12,7 @@ type StatItemProps = {
 export function StatItem({ value, title, description, className }: StatItemProps) {
   return (
     <article className={cn("flex flex-col gap-2", className)}>
-      <div className="text-sky-500 text-5xl font-light leading-none">{value}</div>
+      <div className="text-primary text-5xl font-light leading-none">{value}</div>
 
       <h4 className="text-sm font-medium leading-6">{title}</h4>
 

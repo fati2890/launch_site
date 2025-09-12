@@ -14,7 +14,7 @@ export default function SiteHeader({ site }: { site?: SiteMeta }) {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
       <div className="container flex h-14 items-center justify-between">
-        <Link href="/" className="text-2xl font-semibold text-sky-800">
+        <Link href="/" className="text-2xl font-semibold text-primary">
           {site?.name ?? "Site"}
         </Link>
         <nav className="flex items-center gap-2">
