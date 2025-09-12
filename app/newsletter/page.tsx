@@ -15,7 +15,7 @@ const page = await getPage("newsletter");
   return (
     <>
    
-      {page.showHeader !== false && <SiteHeader site={site}  />}
+      {page.showHeader !== false && <SiteHeader site={page.site}  />}
 
       <main>
         <HomeBlocks page={page} />

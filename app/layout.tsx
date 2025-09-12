@@ -1,7 +1,8 @@
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import SiteHeader from "@/components/layout/site-header";
-import Footer from "@/components/layout/site-footer"; // <= ton composant footerimport { getPage } from "@/lib/page";
+import Footer from "@/components/layout/site-footer"; // <= ton composant footerimport { getPage } from "@/lib/page" <SiteHeader site={site}/>        // {footer ? <Footer text={footer.text} links={footer.links} /> : null}
+;
 import { getLayout } from "@/lib/layout";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -12,9 +13,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       
         <body className="min-h-screen flex flex-col">
           <ThemeProvider>
-        
+          
         <main className="flex-1">{children}</main>
-        {footer ? <Footer text={footer.text} links={footer.links} /> : null}
         </ThemeProvider>
       </body>
         
